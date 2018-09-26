@@ -2,7 +2,7 @@
 
 This project is a sidescroller in a down-on-it's luck futuristic city. The player pilots a flying taxi to it's destination 
 somewhere far to the right.  Motion of the player vehicle, motion of the screen, obstacles, and a compelling backdrop are essential. Enemy obstacles 
-and power-ups are not essential but stronlgy-desired. A retro opening text box or scroll would be ideal but will follow fuctional implementation of core game mechanics.
+and power-ups are not essential but strongly-desired. A retro opening text box or scroll would be ideal but will follow fuctional implementation of core game mechanics.
 
 HTML5, Canvas, and JavaScript should provide the necessities for the project. 
 
