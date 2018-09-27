@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style>
+    	* { padding: 0; margin: 0; }
+    	canvas { background-image: url(https://78.media.tumblr.com/69cd8a833ce59984937f00fbacc4bbe3/tumblr_nuf3lbFhgs1rnbw6mo1_500.gif); background-size: cover; display: block; margin: 0 auto; }
+    </style>
+</head>
+<body>
+
+  <img src="https://giphy.com/gifs/NKEt9elQ5cR68/html5" alt="">
+
+  <div class="game-holder">
+    <canvas id="game-world" width="900" height="330"></canvas>
+  </div>
+
+  <script type="text/javascript">
+    const canvas = document.getElementById("game-world")
+    const cntx = canvas.getContext('2d')
+    const cabHeight = 20;
+    const cabWidth = 40;
+    let cabX = 75;
+    let cabY = 50;
+
+    let rightPressed = false
+    let leftPressed = false
+    let upPressed = false
+    let downPressed = false
+
+    document.addEventListener("keydown", keyDownHandler, false);
+    document.addEventListener("keyup", keyUpHandler, false);
+
+
+    function keyDownHandler(e)  {
+      if (e.key == 'ArrowRight') {
+        rightPressed = true
+      } else if (e.key == 'ArrowLeft') {
+        leftPressed = true
+      }
+    }
+
+
+    function keyUpHandler(e) {
+      if (e.key == "ArrowRight") {
+        rightPressed = false;
+      } else if(e.key == "ArrowLeft") {
+        leftPressed = false
+      }
+    }
+
+    function drawCab() {
+      cntx.beginPath();
+      cntx.rect(cabX, canvas.height-cabY, cabWidth, cabHeight);
+      cntx.fillStyle = 'blue';
+      cntx.fill();
+
+    }
+
+    function drawTower() {
+      cntx.beginPath();
+      cntx.rect(500, 130, 100, 200);
+      cntx.fillStyle = "green"
+      cntx.fill();
+      cntx.closePath();
+    }
+
+    function draw() {
+      if (rightPressed) {
+        cabX +=10;
+      } else if (leftPressed) {
+        cabX -= 10;
+      }
+      if (upPressed) {
+        cabY -= 10;
+      } else if (downPressed) {
+        cabY += 10;
+      }
+      cntx.clearRect(0, 0, canvas.width, canvas.height)
+      drawCab();
+      drawTower();
+    }
+
+    setInterval(draw, 10)
+  </script>
+
+
+</body>
+</html>
