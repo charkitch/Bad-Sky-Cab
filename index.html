@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <style>
     	* { padding: 0; margin: 0; }
-    	canvas { background-image: url(https://78.media.tumblr.com/69cd8a833ce59984937f00fbacc4bbe3/tumblr_nuf3lbFhgs1rnbw6mo1_500.gif); background-size: cover; display: block; margin: 0 auto; }
+    	canvas { backdrop-filter: blur(10px); background-image: url(https://78.media.tumblr.com/69cd8a833ce59984937f00fbacc4bbe3/tumblr_nuf3lbFhgs1rnbw6mo1_500.gif); background-size: cover; display: block; margin: 0 auto; }
     </style>
 </head>
 <body>
@@ -15,98 +15,7 @@
     <canvas id="game-world" width="900" height="330"></canvas>
   </div>
 
-  <script type="text/javascript">
-    const canvas = document.getElementById("game-world")
-    const cntx = canvas.getContext('2d')
-    const cabHeight = 20;
-    const cabWidth = 40;
-    let cabX = 75;
-    let cabY = 50;
-
-    let rightPressed = false
-    let leftPressed = false
-    let upPressed = false
-    let downPressed = false
-
-    document.addEventListener("keydown", keyDownHandler, false);
-    document.addEventListener("keyup", keyUpHandler, false);
-
-
-    function keyDownHandler(e)  {
-      if (e.key === 'ArrowRight') {
-        rightPressed = true
-      } else if (e.key === 'ArrowLeft') {
-        leftPressed = true
-      } else if (e.key === "ArrowUp") {
-        upPressed = true;
-      } else if (e.key == "ArrowDown") {
-        downPressed = true;
-      }
-    }
-
-
-    function keyUpHandler(e) {
-      if (e.key === "ArrowRight") {
-        rightPressed = false;
-      } else if (e.key === "ArrowLeft") {
-        leftPressed = false;
-      } else if (e.key === "ArrowUp") {
-        upPressed = false;
-      } else if (e.key === "ArrowDown") {
-        downPressed = false;
-      }
-    }
-
-    function drawCab() {
-      cntx.beginPath();
-      cntx.rect(cabX, canvas.height-cabY, cabWidth, cabHeight);
-      cntx.fillStyle = 'blue';
-      cntx.fill();
-    }
-
-    function drawTower() {
-      cntx.beginPath();
-      cntx.rect(500, 130, 100, 200);
-      cntx.fillStyle = "green"
-      cntx.fill();
-      cntx.closePath();
-    }
-
-    function gameOver() {
-      if (canvas.height - cabY > canvas.height) {
-        return true
-      } else if (canvas.width - cabX - cabWidth/2 > canvas.width) {
-        return true
-      } else if (canvas.width - cabX - cabWidth/2 < 0) {
-        return true
-      } else if (true) {
-
-      }
-      return false
-    }
-
-    function draw() {
-      if (rightPressed) {
-        cabX += 4;
-      } else if (leftPressed) {
-        cabX -= 2.5;
-      }
-      if (upPressed) {
-        cabY += 2.5;
-      } else if (downPressed) {
-        cabY -= 4;
-      }
-      if (gameOver()) {
-        alert("explosion, had to be there, game over")
-        location.reload(true);
-      }
-      cntx.clearRect(0, 0, canvas.width, canvas.height)
-      drawCab();
-      drawTower();
-    }
-
-    setInterval(draw, 10)
-  </script>
+  <script type="text/javascript" src="./main.js">  </script>
 
 
 </body>
