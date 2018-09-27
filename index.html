@@ -53,7 +53,6 @@
       } else if (e.key === "ArrowUp") {
         upPressed = false;
       } else if (e.key === "ArrowDown") {
-        debugger
         downPressed = false;
       }
     }
@@ -73,17 +72,33 @@
       cntx.closePath();
     }
 
+    function gameOver() {
+      if (canvas.height - cabY > canvas.height) {
+        return true
+      } else if (canvas.width - cabX - cabWidth/2 > canvas.width) {
+        return true
+      } else if (canvas.width - cabX - cabWidth/2 < 0) {
+        return true
+      } else if (true) {
+
+      }
+      return false
+    }
+
     function draw() {
       if (rightPressed) {
-        cabX +=5;
+        cabX += 4;
       } else if (leftPressed) {
         cabX -= 2.5;
       }
       if (upPressed) {
         cabY += 2.5;
       } else if (downPressed) {
-        debugger
-        cabY -= 5;
+        cabY -= 4;
+      }
+      if (gameOver()) {
+        alert("explosion, had to be there, game over")
+        location.reload(true);
       }
       cntx.clearRect(0, 0, canvas.width, canvas.height)
       drawCab();
