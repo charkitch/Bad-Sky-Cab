@@ -3,10 +3,11 @@ const path = require("path");
 module.exports = {
   entry: ('./main.js'),
   output: {
+    path: path.resolve(__dirname, 'app'),
     filename: "bundle.js"
   },
   resolve: {
-    extensions: [".js", "*"]
+    extensions: [".js", ".png", "*"]
   },
   devtool: "eval-source-map",
   module: {
