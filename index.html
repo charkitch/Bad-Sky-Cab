@@ -11,7 +11,25 @@
     <canvas id="game-world" class="game-world" width="900" height="330"></canvas>
     <canvas id="game-background" class="game-background" width="900" height="330"></canvas>
   </div>
-  <script type="text/javascript" src="./app/bundle.js"> </script>
+
+
+
+
+  <script src="https://www.gstatic.com/firebasejs/5.5.2/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyC4Y6RW0B-aKxf1kqA6Q36AEZ_K1ootYjs",
+    authDomain: "bad-sky-cab.firebaseapp.com",
+    databaseURL: "https://bad-sky-cab.firebaseio.com",
+    projectId: "bad-sky-cab",
+    storageBucket: "bad-sky-cab.appspot.com",
+    messagingSenderId: "963218770991"
+  };
+  firebase.initializeApp(config);
+</script>
+
+<script type="text/javascript" src="./app/bundle.js"> </script>
   <!-- <script type="text/javascript" src="main.js"> </script> -->
 
 
