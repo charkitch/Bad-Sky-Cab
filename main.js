@@ -10,5 +10,6 @@ if (gameStarted) {
   BadSkyCab.render();
   window.game = BadSkyCab;
 } else {
-  const HomeScreen = new HomeScreen(canvas, context);
+  new HomeScreen(canvas, context);
+  HomeScreen.render();
 }
