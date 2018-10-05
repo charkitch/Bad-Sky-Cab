@@ -12,3 +12,12 @@
 .game-background {
   background-image: .assets
 }
+
+.game-holder {
+  background-color: currentColor;
+  min-height: 600px;
+  min-width: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
