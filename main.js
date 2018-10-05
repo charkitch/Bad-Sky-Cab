@@ -2,18 +2,38 @@ import Game from './lib/game';
 import HomeOverlay from './lib/interface/home_overlay';
 import Sound from './lib/audio/sound';
 
-let theme = new Sound('./assets/audio/317363.mp3');
-theme.play();
+class Page {
+  constructor() {
+    this.theme = new Sound('./assets/audio/317363.mp3');
+    this.gameStarted = false;
+    this.canvas = document.getElementById("game-world");
+    this.context = this.canvas.getContext('2d');
+    this.homeOverlay = new HomeOverlay(this.canvas, this.context);
+    this.game = new Game(this.canvas, this.context);
+    this.keyDownHandler = this.keyDownHandler.bind(this);
+  }
 
-let gameStarted = false;
-const canvas = document.getElementById("game-world");
-const context = canvas.getContext('2d');
-let Homer = new HomeOverlay(canvas, context);
+  gameStatusToggle() {
+    this.gameStarted = ! this.gameStarted;
+  }
 
-if (gameStarted) {
-  const BadSkyCab = new Game(canvas, context);
-  BadSkyCab.render();
-  window.game = BadSkyCab;
-} else {
-  Homer.draw(context);
+  keyDownHandler(e) {
+    this.gameStatusToggle();
+  }
+
+  render() {
+    if (this.gameStarted) {
+      this.theme.play();
+      this.game.render();
+    } else {
+      debugger
+      let glerd = document.addEventListener("keydown", this.keyDownHandler);
+      debugger
+      this.homeOverlay.draw(this.context);
+    }
+  }
+
 }
+
+let website = new Page();
+website.render();

@@ -20,4 +20,9 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
+}
+
+.game-title {
+  color: red
 }
