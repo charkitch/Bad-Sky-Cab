@@ -1,0 +1,29 @@
+{
+  "name": "bad-sky-cab",
+  "version": "1.0.0",
+  "description": "An aerial cyberpunk side-scroller",
+  "main": "main.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {
+    "babel-loader": "^8.0.4",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "standup": "webpack --watch --mode=development"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/charkitch/Bad-Sky-Cab.git"
+  },
+  "author": "charkitch",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/charkitch/Bad-Sky-Cab/issues"
+  },
+  "homepage": "https://github.com/charkitch/Bad-Sky-Cab#readme"
+}

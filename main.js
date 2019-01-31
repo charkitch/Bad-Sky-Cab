@@ -11,13 +11,12 @@ class Page {
   }
 
   gameStatusToggle() {
-    this.gameStarted = ! this.gameStarted;
+    this.gameStarted = !this.gameStarted;
   }
 
   render() {
-      this.game.render();
+    this.game.render();
   }
-
 }
 
 let website = new Page();
