@@ -1,5 +1,4 @@
 use wasm_bindgen::prelude::*;
-use serde_wasm_bindgen::{from_value, to_value};
 
 mod entities;
 mod physics;

@@ -166,40 +166,43 @@ impl GameState {
         self.obstacle_spawn_timer -= 1;
 
         if self.obstacle_spawn_timer <= 0 {
-            let rightmost_x = self.obstacles.iter()
-                .map(|o| o.x + o.width)
-                .fold(0.0f32, |a, b| a.max(b));
-
-            if rightmost_x < self.canvas_width - 200.0 {
-                if let Some(obstacle) = self.random_obstacle() {
-                    self.obstacles.push(obstacle);
+            let mut spawn_x = self.canvas_width;
+            if !self.obstacles.is_empty() {
+                let rightmost_x = self.obstacles.iter()
+                    .map(|o| o.x + o.width)
+                    .fold(0.0f32, |a, b| a.max(b));
+                if rightmost_x > self.canvas_width {
+                    spawn_x = rightmost_x;
                 }
-                self.obstacle_spawn_timer = (Math::random() * 50.0) as u32 + 25;
             }
+
+            if let Some(obstacle) = self.random_obstacle(spawn_x) {
+                self.obstacles.push(obstacle);
+            }
+            self.obstacle_spawn_timer = (Math::random() * 100.0) as u32 + 50;
         }
     }
 
     fn generate_initial_obstacles(&mut self) {
         let mut spawn_x = self.canvas_width;
         for _ in 0..10 {
-            if let Some(mut obstacle) = self.random_obstacle() {
-                obstacle.x = spawn_x;
+            if let Some(obstacle) = self.random_obstacle(spawn_x) {
                 spawn_x += obstacle.width + (Math::random() * 100.0) as f32 + 50.0;
                 self.obstacles.push(obstacle);
             }
         }
     }
 
-    fn random_obstacle(&self) -> Option<Obstacle> {
+    fn random_obstacle(&self, spawn_x: f32) -> Option<Obstacle> {
         let rand_val = (Math::random() * 100.0) as u32;
         let obstacle_type = match rand_val {
-            0..=30 => ObstacleType::WideTower,       // 30% chance
-            31..=60 => ObstacleType::TallTower,      // 30% chance
-            61..=90 => ObstacleType::BuildingTop,    // 30% chance
-            _ => return None, // 10% chance of no obstacle
+            0..=33 => ObstacleType::WideTower,
+            34..=66 => ObstacleType::TallTower,
+            67..=99 => ObstacleType::BuildingTop,
+            _ => return None,
         };
 
-        Some(Obstacle::new(obstacle_type, self.obstacle_spawn_x + (Math::random() * 200.0) as f32))
+        Some(Obstacle::new(obstacle_type, spawn_x + (Math::random() * 200.0) as f32))
     }
 
     pub fn set_input(&mut self, direction: &str, pressed: bool) {

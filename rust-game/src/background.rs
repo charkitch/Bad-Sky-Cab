@@ -327,8 +327,8 @@ impl Billboard {
         Billboard {
             x,
             y: -10.0, // Hang at the top like in original
-            width: 140.0,
-            height: 80.0,
+            width: 112.0,
+            height: 64.0,
             billboard_type: billboard_types[type_idx.min(4)].clone(),
         }
     }
@@ -368,7 +368,7 @@ impl BackgroundVehicle {
             _ => unreachable!(),
         };
         
-        let mut target = BackgroundVehicle {
+        let target = BackgroundVehicle {
             x,
             y: base_y,
             width,
@@ -385,7 +385,7 @@ impl BackgroundVehicle {
         };
         
         // Create police car (chasing)
-        let mut police = BackgroundVehicle {
+        let police = BackgroundVehicle {
             x: x + spacing,
             y: base_y,
             width: 40.0,
@@ -529,7 +529,7 @@ impl BackgroundManager {
 
     fn spawn_billboards_if_needed(&mut self) {
         // Spawn billboards with proper spacing check
-        if self.spawn_timer % 600 == 300 && Math::random() < 0.4 {
+        if self.spawn_timer % 200 == 100 && Math::random() < 0.4 {
             let min_spacing = 250.0; // Minimum distance between billboards
             let spawn_x = self.canvas_width + (Math::random() * 200.0) as f32 + 100.0;
             

@@ -208,7 +208,6 @@ class RustGameWrapper {
         'WideTower': './assets/images/buildings/wide_building.png',
         'TallTower': './assets/images/buildings/tall_building.png',
         'BuildingTop': './assets/images/buildings/tall_building.png',
-        'FloatingPlatform': './assets/images/platforms/sky_condo.png',
     };
 
     const promises = Object.entries(obstacleImageNames).map(([key, src]) => {

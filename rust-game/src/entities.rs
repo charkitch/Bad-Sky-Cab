@@ -85,7 +85,6 @@ pub struct Obstacle {
 pub enum ObstacleType {
     WideTower,
     TallTower,
-    FloatingPlatform,
     Train,
     VehicleLeft,
     VehicleRight,
@@ -116,15 +115,6 @@ impl Obstacle {
                 damage: 6.0,
                 obstacle_type,
                 image_src: String::from("./assets/images/buildings/tall_building.png"),
-            },
-            ObstacleType::FloatingPlatform => Obstacle {
-                x,
-                y: 130.0, // Move higher to avoid traffic lanes
-                width: 80.0,
-                height: 20.0,
-                damage: 4.0,
-                obstacle_type,
-                image_src: String::from(""),
             },
             ObstacleType::Train => Obstacle {
                 x,
