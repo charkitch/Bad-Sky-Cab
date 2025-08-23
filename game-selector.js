@@ -182,21 +182,52 @@ class RustGameWrapper {
             break;
         }
         
+        // Make avoiding vehicles brighter/more visible
+        if (vehicle.avoiding) {
+          this.ctx.shadowColor = color;
+          this.ctx.shadowBlur = 8;
+          this.ctx.globalAlpha = 0.9;
+        } else {
+          this.ctx.shadowBlur = 0;
+          this.ctx.globalAlpha = 0.7;
+        }
+        
         this.ctx.fillStyle = color;
-        this.ctx.globalAlpha = 0.7;
         this.ctx.fillRect(vehicle.x, vehicle.y, vehicle.width, vehicle.height);
         
-        // Add direction indicators (simple arrows)
+        // Add border for avoiding vehicles
+        if (vehicle.avoiding) {
+          this.ctx.strokeStyle = 'white';
+          this.ctx.lineWidth = 1;
+          this.ctx.strokeRect(vehicle.x, vehicle.y, vehicle.width, vehicle.height);
+        }
+        
+        // Add direction indicators
         this.ctx.fillStyle = 'white';
         this.ctx.globalAlpha = 1.0;
-        this.ctx.font = '12px Arial';
+        this.ctx.shadowBlur = 0;
+        this.ctx.font = '10px Arial';
+        
+        // Show different symbols for avoiding vs normal
+        let symbol = vehicle.moving_right ? '→' : '←';
+        if (vehicle.avoiding) {
+          symbol = '!'; // Clear indication of avoidance
+          // Also make the text larger and more visible
+          this.ctx.font = '14px Arial';
+          this.ctx.fillStyle = 'yellow';
+        } else {
+          this.ctx.font = '10px Arial';
+          this.ctx.fillStyle = 'white';
+        }
+        
         this.ctx.fillText(
-          vehicle.moving_right ? '→' : '←',
-          vehicle.x + vehicle.width/2 - 6,
-          vehicle.y + vehicle.height/2 + 4
+          symbol,
+          vehicle.x + vehicle.width/2 - 5,
+          vehicle.y + vehicle.height/2 + 3
         );
       });
       this.ctx.globalAlpha = 1.0;
+      this.ctx.shadowBlur = 0;
     }
 
     // Render game obstacles (foreground)

@@ -7,6 +7,9 @@
   margin: 0 auto;
   width: 900;
   height: 330;
+  /* Attempt to slow animation - may not work on all browsers */
+  animation-play-state: paused;
+  animation-delay: -50s; /* Try to start at different frame */
 }
 
 .game-background {

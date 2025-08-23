@@ -59,6 +59,9 @@ impl GameState {
         // Check collisions
         self.check_collisions();
 
+        // Check traffic vehicle collisions with player
+        self.check_traffic_collisions();
+
         // Check game over conditions
         if Physics::check_game_over(&self.player, self.canvas_width, self.canvas_height) {
             self.game_over = true;
@@ -84,6 +87,35 @@ impl GameState {
         for obstacle in &self.obstacles {
             if Physics::check_collision(&self.player, obstacle) {
                 Physics::handle_collision(&mut self.player, obstacle);
+            }
+        }
+    }
+
+    fn check_traffic_collisions(&mut self) {
+        for vehicle in &self.background.traffic_vehicles {
+            if vehicle.check_collision_with_player(
+                self.player.x,
+                self.player.y,
+                self.player.width,
+                self.player.height
+            ) {
+                // Apply damage from traffic vehicle
+                self.player.damage += vehicle.damage;
+                
+                // Push player away from vehicle (similar to obstacle collision)
+                if self.player.y < vehicle.y {
+                    self.player.y -= 10.0;
+                } else if self.player.y > vehicle.y {
+                    self.player.y += 5.0;
+                    self.player.x -= 15.0;
+                } else if self.player.x < vehicle.x {
+                    self.player.x -= 25.0;
+                } else if self.player.x > vehicle.x {
+                    self.player.x += 10.0;
+                }
+                
+                // Only handle one collision per frame to avoid multiple damage
+                break;
             }
         }
     }
