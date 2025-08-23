@@ -1,3 +1,6 @@
+import SpeakerIcon from './lib/interface/speaker_icon.js';
+import Sound from './lib/audio/sound.js';
+
 class GameSelector {
   constructor() {
     this.gameContainer = document.getElementById('game-container');
@@ -37,6 +40,9 @@ class GameSelector {
   backToMenu() {
     if (this.currentGame && this.currentGame.cleanup) {
       this.currentGame.cleanup();
+    }
+    if (this.currentGame && this.currentGame.themeSound) {
+        this.currentGame.themeSound.stop();
     }
     this.currentGame = null;
     this.gameContainer.style.display = 'none';
@@ -83,6 +89,12 @@ class RustGameWrapper {
     this.ctx = this.canvas.getContext('2d');
     this.gameState = null;
     this.running = false;
+    this.soundPaused = true;
+    this.speakerIcon = new SpeakerIcon();
+    this.themeSound = new Sound({
+        src: './assets/audio/317363.mp3',
+        loopStatus: true
+    });
     
     // Load vehicle images
     this.vehicleImages = {};
@@ -235,6 +247,33 @@ class RustGameWrapper {
     // Input handling will be implemented here
     document.addEventListener('keydown', (e) => this.handleInput(e, true));
     document.addEventListener('keyup', (e) => this.handleInput(e, false));
+    this.canvas.addEventListener('mouseup', (e) => this.handleMouseUp(e));
+  }
+
+  handleMouseUp(e) {
+    if (this.inSpeakerBox(e)) {
+      this.soundButtonPressed();
+    }
+  }
+
+  soundButtonPressed() {
+    if (this.soundPaused === false) {
+        this.soundPaused = true;
+        this.themeSound.stop();
+    } else {
+        this.soundPaused = false;
+        this.themeSound.play(this.soundPaused);
+    }
+  }
+
+  inSpeakerBox(e) {
+    let page = this.canvas.getBoundingClientRect();
+    let clickX = e.clientX - page.left;
+    let clickY = e.clientY - page.top;
+    return clickX > this.speakerIcon.x
+      && clickX < this.speakerIcon.x + 15
+        && clickY > this.speakerIcon.y
+         && clickY < this.speakerIcon.y + 20;
   }
 
   handleInput(event, pressed) {
@@ -403,6 +442,8 @@ class RustGameWrapper {
       
       this.ctx.restore();
     }
+    this.speakerIcon.draw(this.ctx, this.soundPaused);
+    this.themeSound.play(this.soundPaused);
   }
 
   renderVehicle(vehicle) {
