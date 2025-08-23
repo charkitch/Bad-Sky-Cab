@@ -92,6 +92,7 @@ pub enum ObstacleType {
     DeliveryRight,
     Billboard,
     BuildingTop,
+    Orb, // Add little floating orbs
 }
 
 impl Obstacle {
@@ -115,7 +116,7 @@ impl Obstacle {
             },
             ObstacleType::FloatingPlatform => Obstacle {
                 x,
-                y: 100.0,
+                y: 130.0, // Move higher to avoid traffic lanes
                 width: 80.0,
                 height: 20.0,
                 damage: 4.0,
@@ -175,6 +176,14 @@ impl Obstacle {
                 width: 80.0,
                 height: 130.0,
                 damage: 6.0,
+                obstacle_type,
+            },
+            ObstacleType::Orb => Obstacle {
+                x,
+                y: 120.0 + (js_sys::Math::random() * 60.0) as f32, // Random floating height
+                width: 15.0,
+                height: 15.0,
+                damage: 2.0,
                 obstacle_type,
             },
         }

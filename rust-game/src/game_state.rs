@@ -62,6 +62,9 @@ impl GameState {
         // Check traffic vehicle collisions with player
         self.check_traffic_collisions();
 
+        // Check billboard collisions with player
+        self.check_billboard_collisions();
+
         // Check game over conditions
         if Physics::check_game_over(&self.player, self.canvas_width, self.canvas_height) {
             self.game_over = true;
@@ -120,6 +123,34 @@ impl GameState {
         }
     }
 
+    fn check_billboard_collisions(&mut self) {
+        for billboard in &self.background.billboards {
+            // Check if player collides with billboard
+            let below_the_top = self.player.y + self.player.height > billboard.y;
+            let above_the_bottom = self.player.y < billboard.y + billboard.height;
+            let to_the_left_of_right = self.player.x < billboard.x + billboard.width;
+            let to_the_right_of_left = self.player.x + self.player.width > billboard.x;
+
+            if below_the_top && above_the_bottom && to_the_left_of_right && to_the_right_of_left {
+                // Apply significant damage from billboard collision
+                self.player.damage += 5.0;
+                
+                // Push player away from billboard
+                if self.player.x < billboard.x + billboard.width / 2.0 {
+                    self.player.x -= 20.0; // Push left
+                } else {
+                    self.player.x += 20.0; // Push right
+                }
+                
+                // Push player down since billboards are at the top
+                self.player.y += 15.0;
+                
+                // Only handle one collision per frame
+                break;
+            }
+        }
+    }
+
     fn update_score(&mut self) {
         if self.timer == 1000 {
             self.score_multiplier *= 2;
@@ -157,16 +188,11 @@ impl GameState {
     fn random_obstacle(&self) -> Option<Obstacle> {
         let rand_val = (Math::random() * 100.0) as u32;
         let obstacle_type = match rand_val {
-            0..=12 => ObstacleType::WideTower,
-            13..=29 => ObstacleType::TallTower,
-            30..=39 => ObstacleType::FloatingPlatform,
-            40..=54 => ObstacleType::Train,
-            55..=67 => ObstacleType::VehicleLeft,
-            68..=81 => ObstacleType::VehicleRight,
-            82..=84 => ObstacleType::DeliveryRight,
-            85..=87 => ObstacleType::DeliveryLeft,
-            88..=92 => ObstacleType::Billboard,
-            93..=99 => ObstacleType::BuildingTop,
+            0..=25 => ObstacleType::WideTower,
+            26..=50 => ObstacleType::TallTower,
+            51..=75 => ObstacleType::FloatingPlatform,
+            76..=99 => ObstacleType::BuildingTop,
+            // Remove orbs from obstacles since they're now in traffic
             _ => return None,
         };
 

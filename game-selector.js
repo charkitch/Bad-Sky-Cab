@@ -83,7 +83,90 @@ class RustGameWrapper {
     this.gameState = null;
     this.running = false;
     
+    // Load vehicle images
+    this.vehicleImages = {};
+    this.loadVehicleImages();
+    
+    // Load orb image
+    this.orbImage = new Image();
+    this.orbImage.src = './assets/images/vehicles/boom.png';
+    
+    // Load player image (yellow taxi)
+    this.playerImage = new Image();
+    this.playerImage.src = './assets/images/vehicles/taxi.png';
+    
+    // Load billboard images
+    this.billboardImages = {};
+    this.loadBillboardImages();
+    
+    // Load building and platform images
+    this.buildingImages = {};
+    this.loadBuildingImages();
+    
     this.bindEvents();
+  }
+
+  loadVehicleImages() {
+    const imageNames = {
+      'Taxi_right': './assets/images/vehicles/taxi.png',
+      'Taxi_left': './assets/images/vehicles/taxi_left.png',
+      'Police_right': './assets/images/vehicles/police.png',
+      'Police_left': './assets/images/vehicles/police_left.png',
+      'Civil_right': './assets/images/vehicles/civil.png',
+      'Civil_left': './assets/images/vehicles/civil_left.png',
+      'Delivery_right': './assets/images/vehicles/delivery_truck.png',
+      'Delivery_left': './assets/images/vehicles/delivery_left.png',
+      'Train_front': './assets/images/vehicles/train_front.png',
+      'Train_center': './assets/images/vehicles/train_center.png',
+      'Train_back': './assets/images/vehicles/train_back.png'
+    };
+
+    for (const [key, src] of Object.entries(imageNames)) {
+      const img = new Image();
+      img.src = src;
+      this.vehicleImages[key] = img;
+    }
+  }
+
+  loadBillboardImages() {
+    const billboardNames = {
+      'FirstBreak': './assets/images/billboards/first_break.png',
+      'SecondBreak': './assets/images/billboards/second_break.png',
+      'Security': './assets/images/billboards/security.png',
+      'Security2': './assets/images/billboards/security2.png',
+      'SharkMovie': './assets/images/billboards/shark_movie.png'
+    };
+
+    for (const [key, src] of Object.entries(billboardNames)) {
+      const img = new Image();
+      img.src = src;
+      this.billboardImages[key] = img;
+    }
+  }
+
+  loadBuildingImages() {
+    const buildingNames = {
+      // Buildings
+      'TallTower': './assets/images/buildings/tall_building.png',
+      'WideTower': './assets/images/buildings/wide_building.png',
+      'BuildingTop': './assets/images/buildings/wide_building.png', // Use wide building for building tops
+      
+      // Platforms
+      'FloatingPlatform': './assets/images/platforms/sky_condo.png',
+      
+      // Additional platforms we can use
+      'ClosedShop': './assets/images/platforms/Closed-Shop-Single.png',
+      'ChipperShop': './assets/images/platforms/chipper_shop.png',
+      'SushiBar': './assets/images/platforms/sushi_bar.png',
+      'MoodySkyCondo': './assets/images/platforms/moody_sky_condo.png',
+      'Drone': './assets/images/platforms/drone.png'
+    };
+
+    for (const [key, src] of Object.entries(buildingNames)) {
+      const img = new Image();
+      img.src = src;
+      this.buildingImages[key] = img;
+    }
   }
 
   start() {
@@ -148,8 +231,8 @@ class RustGameWrapper {
     // Render far background buildings (parallax)
     if (state.background?.far_buildings) {
       this.ctx.save();
-      this.ctx.globalAlpha = 0.3;
-      this.ctx.fillStyle = '#444466';
+      this.ctx.globalAlpha = 0.6; // Increased opacity to make buildings more visible
+      this.ctx.fillStyle = '#556677'; // Lighter color for better visibility
       state.background.far_buildings.forEach(building => {
         this.ctx.fillRect(
           building.x + (state.background.far_building_offset || 0),
@@ -161,118 +244,43 @@ class RustGameWrapper {
       this.ctx.restore();
     }
 
-    // Render traffic lanes with vehicles
+    // Render traffic lanes with vehicles FIRST (background layer)
     if (state.background?.traffic_vehicles) {
       state.background.traffic_vehicles.forEach(vehicle => {
-        // Different colors for different vehicle types and directions
-        let color = '#ffcc00'; // Default yellow
-        switch (vehicle.vehicle_type) {
-          case 'Police':
-            color = vehicle.moving_right ? '#0066ff' : '#004499';
-            break;
-          case 'Civil':
-            color = vehicle.moving_right ? '#888888' : '#666666';
-            break;
-          case 'Delivery':
-            color = vehicle.moving_right ? '#ff6600' : '#dd4400';
-            break;
-          case 'Taxi':
-          default:
-            color = vehicle.moving_right ? '#ffcc00' : '#ddaa00';
-            break;
-        }
-        
-        // Make avoiding vehicles brighter/more visible
-        if (vehicle.avoiding) {
-          this.ctx.shadowColor = color;
-          this.ctx.shadowBlur = 8;
-          this.ctx.globalAlpha = 0.9;
-        } else {
-          this.ctx.shadowBlur = 0;
-          this.ctx.globalAlpha = 0.7;
-        }
-        
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(vehicle.x, vehicle.y, vehicle.width, vehicle.height);
-        
-        // Add border for avoiding vehicles
-        if (vehicle.avoiding) {
-          this.ctx.strokeStyle = 'white';
-          this.ctx.lineWidth = 1;
-          this.ctx.strokeRect(vehicle.x, vehicle.y, vehicle.width, vehicle.height);
-        }
-        
-        // Add direction indicators
-        this.ctx.fillStyle = 'white';
-        this.ctx.globalAlpha = 1.0;
-        this.ctx.shadowBlur = 0;
-        this.ctx.font = '10px Arial';
-        
-        // Show different symbols for avoiding vs normal
-        let symbol = vehicle.moving_right ? '→' : '←';
-        if (vehicle.avoiding) {
-          symbol = '!'; // Clear indication of avoidance
-          // Also make the text larger and more visible
-          this.ctx.font = '14px Arial';
-          this.ctx.fillStyle = 'yellow';
-        } else {
-          this.ctx.font = '10px Arial';
-          this.ctx.fillStyle = 'white';
-        }
-        
-        this.ctx.fillText(
-          symbol,
-          vehicle.x + vehicle.width/2 - 5,
-          vehicle.y + vehicle.height/2 + 3
-        );
+        this.renderVehicle(vehicle);
       });
       this.ctx.globalAlpha = 1.0;
       this.ctx.shadowBlur = 0;
     }
 
+    // Render billboards AFTER traffic (foreground layer)
+    if (state.background?.billboards) {
+      state.background.billboards.forEach(billboard => {
+        this.renderBillboard(billboard);
+      });
+    }
+
     // Render game obstacles (foreground)
     if (state.obstacles) {
       state.obstacles.forEach(obstacle => {
-        // Different colors for different obstacle types
-        let color = '#ff4444';
-        switch (obstacle.obstacle_type) {
-          case 'Train':
-            color = '#666666';
-            break;
-          case 'Billboard':
-            color = '#00ccff';
-            break;
-          case 'FloatingPlatform':
-            color = '#88ff88';
-            break;
-          case 'TallTower':
-          case 'WideTower':
-          case 'BuildingTop':
-            color = '#994444';
-            break;
-          default:
-            color = '#ff4444';
-        }
-        
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-        
-        // Add a border for better visibility
-        this.ctx.strokeStyle = 'white';
-        this.ctx.lineWidth = 1;
-        this.ctx.strokeRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+        this.renderObstacle(obstacle);
       });
     }
     
-    // Render player (always on top)
+    // Render player (always on top) - use taxi image
     if (state.player) {
-      this.ctx.fillStyle = '#ffff00';
-      this.ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
-      
-      // Add player border
-      this.ctx.strokeStyle = '#ff6600';
-      this.ctx.lineWidth = 2;
-      this.ctx.strokeRect(state.player.x, state.player.y, state.player.width, state.player.height);
+      if (this.playerImage && this.playerImage.complete) {
+        this.ctx.drawImage(this.playerImage, state.player.x, state.player.y, state.player.width, state.player.height);
+      } else {
+        // Fallback to yellow rectangle if image not loaded
+        this.ctx.fillStyle = '#ffff00';
+        this.ctx.fillRect(state.player.x, state.player.y, state.player.width, state.player.height);
+        
+        // Add player border
+        this.ctx.strokeStyle = '#ff6600';
+        this.ctx.lineWidth = 2;
+        this.ctx.strokeRect(state.player.x, state.player.y, state.player.width, state.player.height);
+      }
     }
     
     // Render UI
@@ -286,10 +294,32 @@ class RustGameWrapper {
     this.ctx.strokeText(scoreText, 10, 30);
     this.ctx.fillText(scoreText, 10, 30);
     
-    // Damage with outline
-    const damageText = `Damage: ${Math.floor(state.player?.damage || 0)}`;
-    this.ctx.strokeText(damageText, 10, 60);
-    this.ctx.fillText(damageText, 10, 60);
+    // Color-coded damage indicator like original game
+    const damage = state.player?.damage || 0;
+    const structuralIntegrity = Math.floor(10 - damage);
+    
+    // Structural integrity label
+    this.ctx.strokeText('Structural Integrity:', 10, 60);
+    this.ctx.fillText('Structural Integrity:', 10, 60);
+    
+    // Color-coded damage value
+    let damageColor;
+    if (damage < 2) {
+      damageColor = '#00ff00'; // Green - healthy
+    } else if (damage < 6) {
+      damageColor = '#daa520'; // Goldenrod - damaged  
+    } else {
+      damageColor = '#ff0000'; // Red - critical
+    }
+    
+    this.ctx.strokeStyle = damageColor;
+    this.ctx.fillStyle = damageColor;
+    this.ctx.strokeText(`${structuralIntegrity}`, 200, 60);
+    this.ctx.fillText(`${structuralIntegrity}`, 200, 60);
+    
+    // Reset colors for other UI elements
+    this.ctx.strokeStyle = 'black';
+    this.ctx.fillStyle = 'white';
     
     // Game over overlay
     if (state.game_over) {
@@ -316,6 +346,174 @@ class RustGameWrapper {
       this.ctx.fillText(restartText, this.canvas.width/2, this.canvas.height/2 + 80);
       
       this.ctx.restore();
+    }
+  }
+
+  renderVehicle(vehicle) {
+    if (vehicle.vehicle_type === 'Train') {
+      this.renderTrain(vehicle);
+    } else if (vehicle.vehicle_type === 'TrafficOrb') {
+      this.renderOrb(vehicle);
+    } else {
+      this.renderRegularVehicle(vehicle);
+    }
+    
+    // Add status indicators
+    if (vehicle.avoiding) {
+      this.ctx.fillStyle = 'yellow';
+      this.ctx.font = '14px Arial';
+      this.ctx.fillText('!', vehicle.x + vehicle.width/2 - 5, vehicle.y - 5);
+    }
+    
+    // Add chase indicators
+    if (vehicle.is_being_chased) {
+      this.ctx.fillStyle = 'red';
+      this.ctx.font = '12px Arial';
+      this.ctx.fillText('🏃', vehicle.x + vehicle.width/2 - 8, vehicle.y - 8);
+    }
+    
+    if (vehicle.is_chasing) {
+      this.ctx.fillStyle = 'blue';
+      this.ctx.font = '12px Arial';
+      this.ctx.fillText('👮', vehicle.x + vehicle.width/2 - 8, vehicle.y - 8);
+    }
+  }
+
+  renderRegularVehicle(vehicle) {
+    const direction = vehicle.moving_right ? 'right' : 'left';
+    let imageKey = `${vehicle.vehicle_type}_${direction}`;
+    
+    // Use regular police image for PoliceChase
+    if (vehicle.vehicle_type === 'PoliceChase') {
+      imageKey = `Police_${direction}`;
+    }
+    
+    const image = this.vehicleImages[imageKey];
+    
+    if (image && image.complete) {
+      // Add special effects
+      if (vehicle.vehicle_type === 'PoliceChase') {
+        // Flashing blue-red lights for police chase
+        const time = Date.now() * 0.01;
+        const flash = Math.sin(time) > 0;
+        this.ctx.shadowColor = flash ? '#ff0000' : '#0000ff';
+        this.ctx.shadowBlur = 12;
+      } else if (vehicle.avoiding) {
+        // Yellow glow for avoiding vehicles
+        this.ctx.shadowColor = '#ffff00';
+        this.ctx.shadowBlur = 8;
+      }
+      
+      this.ctx.drawImage(image, vehicle.x, vehicle.y, vehicle.width, vehicle.height);
+      
+      // Clear shadow effects
+      this.ctx.shadowBlur = 0;
+    } else {
+      // Fallback to colored rectangle if image not loaded
+      let color = '#ffcc00';
+      switch (vehicle.vehicle_type) {
+        case 'Police': color = '#0066ff'; break;
+        case 'PoliceChase': color = '#0044aa'; break; // Darker blue for chase car
+        case 'Civil': color = '#888888'; break;
+        case 'Delivery': color = '#ff6600'; break;
+        case 'Taxi': color = '#ffcc00'; break;
+        case 'TrafficOrb': color = '#00ccff'; break; // Cyan for orbs (handled by renderOrb)
+      }
+      
+      this.ctx.fillStyle = color;
+      this.ctx.fillRect(vehicle.x, vehicle.y, vehicle.width, vehicle.height);
+    }
+  }
+
+  renderTrain(vehicle) {
+    const trainLength = vehicle.width;
+    const carWidth = 40; // Each train car is about 40px
+    const numCars = Math.ceil(trainLength / carWidth);
+    
+    for (let i = 0; i < numCars; i++) {
+      const carX = vehicle.x + (i * carWidth);
+      const actualCarWidth = Math.min(carWidth, trainLength - (i * carWidth));
+      
+      let imageKey;
+      if (i === 0) {
+        imageKey = 'Train_front';
+      } else if (i === numCars - 1) {
+        imageKey = 'Train_back';
+      } else {
+        imageKey = 'Train_center';
+      }
+      
+      const image = this.vehicleImages[imageKey];
+      
+      if (image && image.complete) {
+        this.ctx.drawImage(image, carX, vehicle.y, actualCarWidth, vehicle.height);
+      } else {
+        // Fallback rendering
+        this.ctx.fillStyle = '#333333';
+        this.ctx.fillRect(carX, vehicle.y, actualCarWidth, vehicle.height);
+        
+        // Add car dividers
+        if (i > 0) {
+          this.ctx.strokeStyle = '#666666';
+          this.ctx.lineWidth = 1;
+          this.ctx.beginPath();
+          this.ctx.moveTo(carX, vehicle.y);
+          this.ctx.lineTo(carX, vehicle.y + vehicle.height);
+          this.ctx.stroke();
+        }
+      }
+    }
+  }
+
+  renderOrb(vehicle) {
+    if (this.orbImage && this.orbImage.complete) {
+      // Add glow effect for orbs
+      this.ctx.save();
+      this.ctx.shadowColor = '#00ffff';
+      this.ctx.shadowBlur = 8;
+      
+      this.ctx.drawImage(this.orbImage, vehicle.x, vehicle.y, vehicle.width, vehicle.height);
+      this.ctx.restore();
+    } else {
+      // Fallback rendering - glowing circle
+      this.ctx.save();
+      this.ctx.shadowColor = '#00ffff';
+      this.ctx.shadowBlur = 10;
+      this.ctx.fillStyle = '#00ccff';
+      this.ctx.beginPath();
+      this.ctx.arc(vehicle.x + vehicle.width/2, vehicle.y + vehicle.height/2, vehicle.width/2, 0, 2 * Math.PI);
+      this.ctx.fill();
+      
+      // Add border
+      this.ctx.strokeStyle = '#ffffff';
+      this.ctx.lineWidth = 1;
+      this.ctx.beginPath();
+      this.ctx.arc(vehicle.x + vehicle.width/2, vehicle.y + vehicle.height/2, vehicle.width/2, 0, 2 * Math.PI);
+      this.ctx.stroke();
+      this.ctx.restore();
+    }
+  }
+
+  renderBillboard(billboard) {
+    const imageKey = billboard.billboard_type;
+    const image = this.billboardImages[imageKey];
+    
+    if (image && image.complete) {
+      this.ctx.drawImage(image, billboard.x, billboard.y, billboard.width, billboard.height);
+    } else {
+      // Fallback rendering
+      this.ctx.fillStyle = '#330066';
+      this.ctx.fillRect(billboard.x, billboard.y, billboard.width, billboard.height);
+      
+      // Add border for visibility
+      this.ctx.strokeStyle = '#ff00ff';
+      this.ctx.lineWidth = 2;
+      this.ctx.strokeRect(billboard.x, billboard.y, billboard.width, billboard.height);
+      
+      // Add text
+      this.ctx.fillStyle = '#ffffff';
+      this.ctx.font = '12px Arial';
+      this.ctx.fillText('AD', billboard.x + billboard.width/2 - 10, billboard.y + billboard.height/2 + 5);
     }
   }
 
