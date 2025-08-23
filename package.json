@@ -14,7 +14,10 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "standup": "webpack --watch --mode=development"
+    "standup": "webpack --watch --mode=development",
+    "build-rust": "cd rust-game && wasm-pack build --target web",
+    "serve": "python3 -m http.server 8000",
+    "dev": "npm run build-rust && npm run serve"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,29 @@
+# Rust
+rust-game/target/
+rust-game/Cargo.lock
+
+# Node modules
+node_modules/
+
+# Build artifacts
+app/bundle.js
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Screenshots (unless specifically needed)
+Screenshot*.png
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
