@@ -66,6 +66,7 @@ class GameSelector {
       
       // Create Rust game wrapper
       this.currentGame = new RustGameWrapper(wasm);
+      await this.currentGame.loadAllImages();
       this.currentGame.start();
     } catch (error) {
       console.error('Failed to load Rust game:', error);
@@ -85,7 +86,6 @@ class RustGameWrapper {
     
     // Load vehicle images
     this.vehicleImages = {};
-    this.loadVehicleImages();
     
     // Load orb image
     this.orbImage = new Image();
@@ -97,13 +97,23 @@ class RustGameWrapper {
     
     // Load billboard images
     this.billboardImages = {};
-    this.loadBillboardImages();
     
     // Load building and platform images
     this.buildingImages = {};
-    this.loadBuildingImages();
+
+    // Load obstacle images
+    this.obstacleImages = {};
     
     this.bindEvents();
+  }
+
+  async loadAllImages() {
+    await Promise.all([
+        this.loadVehicleImages(),
+        this.loadBillboardImages(),
+        this.loadBuildingImages(),
+        this.loadObstacleImages(),
+    ]);
   }
 
   loadVehicleImages() {
@@ -121,11 +131,19 @@ class RustGameWrapper {
       'Train_back': './assets/images/vehicles/train_back.png'
     };
 
-    for (const [key, src] of Object.entries(imageNames)) {
-      const img = new Image();
-      img.src = src;
-      this.vehicleImages[key] = img;
-    }
+    const promises = Object.entries(imageNames).map(([key, src]) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                this.vehicleImages[key] = img;
+                resolve();
+            };
+            img.onerror = reject;
+            img.src = src;
+        });
+    });
+
+    return Promise.all(promises);
   }
 
   loadBillboardImages() {
@@ -137,11 +155,19 @@ class RustGameWrapper {
       'SharkMovie': './assets/images/billboards/shark_movie.png'
     };
 
-    for (const [key, src] of Object.entries(billboardNames)) {
-      const img = new Image();
-      img.src = src;
-      this.billboardImages[key] = img;
-    }
+    const promises = Object.entries(billboardNames).map(([key, src]) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                this.billboardImages[key] = img;
+                resolve();
+            };
+            img.onerror = reject;
+            img.src = src;
+        });
+    });
+
+    return Promise.all(promises);
   }
 
   loadBuildingImages() {
@@ -162,11 +188,42 @@ class RustGameWrapper {
       'Drone': './assets/images/platforms/drone.png'
     };
 
-    for (const [key, src] of Object.entries(buildingNames)) {
-      const img = new Image();
-      img.src = src;
-      this.buildingImages[key] = img;
-    }
+    const promises = Object.entries(buildingNames).map(([key, src]) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                this.buildingImages[key] = img;
+                resolve();
+            };
+            img.onerror = reject;
+            img.src = src;
+        });
+    });
+
+    return Promise.all(promises);
+  }
+
+  loadObstacleImages() {
+    const obstacleImageNames = {
+        'WideTower': './assets/images/buildings/wide_building.png',
+        'TallTower': './assets/images/buildings/tall_building.png',
+        'BuildingTop': './assets/images/buildings/tall_building.png',
+        'FloatingPlatform': './assets/images/platforms/sky_condo.png',
+    };
+
+    const promises = Object.entries(obstacleImageNames).map(([key, src]) => {
+        return new Promise((resolve, reject) => {
+            const img = new Image();
+            img.onload = () => {
+                this.obstacleImages[key] = img;
+                resolve();
+            };
+            img.onerror = reject;
+            img.src = src;
+        });
+    });
+
+    return Promise.all(promises);
   }
 
   start() {
@@ -514,6 +571,18 @@ class RustGameWrapper {
       this.ctx.fillStyle = '#ffffff';
       this.ctx.font = '12px Arial';
       this.ctx.fillText('AD', billboard.x + billboard.width/2 - 10, billboard.y + billboard.height/2 + 5);
+    }
+  }
+
+  renderObstacle(obstacle) {
+    const image = this.obstacleImages[obstacle.obstacle_type];
+
+    if (image && image.complete) {
+        this.ctx.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    } else {
+        // Fallback rendering
+        this.ctx.fillStyle = '#808080'; // Gray color for unloaded obstacles
+        this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
     }
   }
 

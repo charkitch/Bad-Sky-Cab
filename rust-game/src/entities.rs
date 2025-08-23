@@ -78,6 +78,7 @@ pub struct Obstacle {
     pub height: f32,
     pub damage: f32,
     pub obstacle_type: ObstacleType,
+    pub image_src: String,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -105,6 +106,7 @@ impl Obstacle {
                 height: 80.0,
                 damage: 8.0,
                 obstacle_type,
+                image_src: String::from("./assets/images/buildings/wide_building.png"),
             },
             ObstacleType::TallTower => Obstacle {
                 x,
@@ -113,6 +115,7 @@ impl Obstacle {
                 height: 180.0,
                 damage: 6.0,
                 obstacle_type,
+                image_src: String::from("./assets/images/buildings/tall_building.png"),
             },
             ObstacleType::FloatingPlatform => Obstacle {
                 x,
@@ -121,6 +124,7 @@ impl Obstacle {
                 height: 20.0,
                 damage: 4.0,
                 obstacle_type,
+                image_src: String::from(""),
             },
             ObstacleType::Train => Obstacle {
                 x,
@@ -129,6 +133,7 @@ impl Obstacle {
                 height: 40.0,
                 damage: 10.0,
                 obstacle_type,
+                image_src: String::from(""),
             },
             ObstacleType::VehicleLeft => Obstacle {
                 x,
@@ -137,6 +142,7 @@ impl Obstacle {
                 height: 20.0,
                 damage: 5.0,
                 obstacle_type,
+                image_src: String::from(""),
             },
             ObstacleType::VehicleRight => Obstacle {
                 x,
@@ -145,6 +151,7 @@ impl Obstacle {
                 height: 20.0,
                 damage: 5.0,
                 obstacle_type,
+                image_src: String::from(""),
             },
             ObstacleType::DeliveryLeft => Obstacle {
                 x,
@@ -153,6 +160,7 @@ impl Obstacle {
                 height: 30.0,
                 damage: 7.0,
                 obstacle_type,
+                image_src: String::from(""),
             },
             ObstacleType::DeliveryRight => Obstacle {
                 x,
@@ -161,6 +169,7 @@ impl Obstacle {
                 height: 30.0,
                 damage: 7.0,
                 obstacle_type,
+                image_src: String::from(""),
             },
             ObstacleType::Billboard => Obstacle {
                 x,
@@ -169,6 +178,7 @@ impl Obstacle {
                 height: 40.0,
                 damage: 3.0,
                 obstacle_type,
+                image_src: String::from(""),
             },
             ObstacleType::BuildingTop => Obstacle {
                 x,
@@ -177,6 +187,7 @@ impl Obstacle {
                 height: 130.0,
                 damage: 6.0,
                 obstacle_type,
+                image_src: String::from("./assets/images/buildings/tall_building.png"),
             },
             ObstacleType::Orb => Obstacle {
                 x,
@@ -185,6 +196,7 @@ impl Obstacle {
                 height: 15.0,
                 damage: 2.0,
                 obstacle_type,
+                image_src: String::from(""),
             },
         }
     }

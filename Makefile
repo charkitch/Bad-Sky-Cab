@@ -1,4 +1,4 @@
-.PHONY: build-rust serve dev clean help
+.PHONY: build-rust serve dev clean help build-and-launch
 
 # Default target
 help:
@@ -10,6 +10,7 @@ help:
 	@echo "  dev           Build Rust + start server"
 	@echo "  clean         Clean build artifacts"
 	@echo "  help          Show this help message"
+	@echo "  build-and-launch  Build the Rust WASM module and start the server"
 
 # Build the Rust WASM module
 build-rust:
@@ -18,11 +19,14 @@ build-rust:
 
 # Start development server
 serve:
-	@echo "Starting development server at http://localhost:8000"
-	python3 -m http.server 8000
+	@echo "Starting development server at http://localhost:8080"
+	python3 -m http.server 8080
 
 # Build and serve (development workflow)
 dev: build-rust serve
+
+# Build and launch
+build-and-launch: build-rust serve
 
 # Clean build artifacts
 clean:
