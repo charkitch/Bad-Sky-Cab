@@ -9,6 +9,7 @@ pub struct Player {
     pub damage: f32,
     pub velocity_x: f32,
     pub velocity_y: f32,
+    pub collision_cooldown: u32, // Frames until next collision can occur
 }
 
 impl Player {
@@ -21,10 +22,16 @@ impl Player {
             damage: 0.0,
             velocity_x: 0.0,
             velocity_y: 0.0,
+            collision_cooldown: 0,
         }
     }
 
     pub fn update(&mut self, input: &InputState) {
+        // Decrease collision cooldown
+        if self.collision_cooldown > 0 {
+            self.collision_cooldown -= 1;
+        }
+
         // Reset velocity
         self.velocity_x = 0.0;
         self.velocity_y = 0.0;
@@ -46,6 +53,14 @@ impl Player {
         // Update position
         self.x += self.velocity_x;
         self.y += self.velocity_y;
+    }
+
+    pub fn can_take_damage(&self) -> bool {
+        self.collision_cooldown == 0
+    }
+
+    pub fn apply_collision_cooldown(&mut self) {
+        self.collision_cooldown = 15; // 15 frames = ~0.25 seconds at 60fps
     }
 
     pub fn bounce_up(&mut self, obstacle: &Obstacle) {

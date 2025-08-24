@@ -376,6 +376,7 @@ class RustGameWrapper {
         this.ctx.lineWidth = 2;
         this.ctx.strokeRect(state.player.x, state.player.y, state.player.width, state.player.height);
       }
+      
     }
     
     // Render UI
@@ -454,6 +455,7 @@ class RustGameWrapper {
     } else {
       this.renderRegularVehicle(vehicle);
     }
+    
     
     // Add status indicators
     if (vehicle.avoiding) {
@@ -612,6 +614,7 @@ class RustGameWrapper {
       this.ctx.font = '12px Arial';
       this.ctx.fillText('AD', billboard.x + billboard.width/2 - 10, billboard.y + billboard.height/2 + 5);
     }
+    
   }
 
   renderObstacle(obstacle) {

@@ -97,6 +97,10 @@ impl GameState {
     }
 
     fn check_traffic_collisions(&mut self) {
+        if !self.player.can_take_damage() {
+            return; // Skip collision checks during cooldown
+        }
+
         for vehicle in &self.background.traffic_vehicles {
             if vehicle.check_collision_with_player(
                 self.player.x,
@@ -106,6 +110,7 @@ impl GameState {
             ) {
                 // Apply damage from traffic vehicle
                 self.player.damage += vehicle.damage;
+                self.player.apply_collision_cooldown();
                 
                 // Push player away from vehicle (similar to obstacle collision)
                 if self.player.y < vehicle.y {
@@ -126,16 +131,21 @@ impl GameState {
     }
 
     fn check_billboard_collisions(&mut self) {
+        if !self.player.can_take_damage() {
+            return; // Skip collision checks during cooldown
+        }
+
         for billboard in &self.background.billboards {
-            // Check if player collides with billboard
+            // Check if player collides with billboard - using same logic as physics.rs
             let below_the_top = self.player.y + self.player.height > billboard.y;
             let above_the_bottom = self.player.y < billboard.y + billboard.height;
             let to_the_left_of_right = self.player.x < billboard.x + billboard.width;
-            let to_the_right_of_left = self.player.x + self.player.width > billboard.x;
+            let to_the_right_of_left = self.player.width + self.player.x - 2.0 > billboard.x;
 
             if below_the_top && above_the_bottom && to_the_left_of_right && to_the_right_of_left {
                 // Apply significant damage from billboard collision
                 self.player.damage += 5.0;
+                self.player.apply_collision_cooldown();
                 
                 // Push player away from billboard
                 if self.player.x < billboard.x + billboard.width / 2.0 {

@@ -45,14 +45,14 @@ impl BackgroundVehicle {
         
         let base_y = 50.0; // Top traffic lane
         
-        // Different properties based on vehicle type
+        // Different properties based on vehicle type - reduced sizes to match visual
         let (width, height, damage, speed_base, speed_variance) = match vehicle_type {
             VehicleType::Train => (120.0, 25.0, 8.0, 1.5, 0.5), // Long, slow, high damage
-            VehicleType::PoliceChase => (40.0, 20.0, 6.0, 6.0, 1.0), // Fast police car - 1.5x player speed
-            VehicleType::TrafficOrb => (20.0, 20.0, 3.0, 2.0, 1.5), // Small floating orbs
-            VehicleType::Delivery => (45.0, 22.0, 4.0, 2.5, 1.0),
-            VehicleType::Taxi => (40.0, 20.0, 2.0, 3.0, 2.0),
-            VehicleType::Civil => (38.0, 20.0, 1.5, 3.0, 2.0),
+            VehicleType::PoliceChase => (35.0, 18.0, 6.0, 6.0, 1.0), // Fast police car - smaller collision box
+            VehicleType::TrafficOrb => (16.0, 16.0, 3.0, 2.0, 1.5), // Smaller floating orbs
+            VehicleType::Delivery => (40.0, 20.0, 4.0, 2.5, 1.0), // Smaller delivery truck
+            VehicleType::Taxi => (35.0, 18.0, 2.0, 3.0, 2.0), // Smaller taxi
+            VehicleType::Civil => (34.0, 18.0, 1.5, 3.0, 2.0), // Smaller civil car
             VehicleType::Police => unreachable!(), // Only PoliceChase now
         };
         
@@ -86,12 +86,12 @@ impl BackgroundVehicle {
         
         let base_y = 90.0; // Bottom traffic lane
         
-        // Different properties based on vehicle type - no trains for left-moving
+        // Different properties based on vehicle type - no trains for left-moving, reduced sizes
         let (width, height, damage, speed_base, speed_variance) = match vehicle_type {
-            VehicleType::TrafficOrb => (20.0, 20.0, 3.0, 1.8, 1.2), // Slower orbs going left
-            VehicleType::Delivery => (45.0, 22.0, 4.0, 2.0, 1.0),
-            VehicleType::Taxi => (40.0, 20.0, 2.0, 2.5, 1.5),
-            VehicleType::Civil => (38.0, 20.0, 1.5, 2.5, 1.5),
+            VehicleType::TrafficOrb => (16.0, 16.0, 3.0, 1.8, 1.2), // Smaller orbs going left
+            VehicleType::Delivery => (40.0, 20.0, 4.0, 2.0, 1.0), // Smaller delivery truck
+            VehicleType::Taxi => (35.0, 18.0, 2.0, 2.5, 1.5), // Smaller taxi
+            VehicleType::Civil => (34.0, 18.0, 1.5, 2.5, 1.5), // Smaller civil car
             VehicleType::Train => unreachable!(), // Trains only go right
             VehicleType::PoliceChase => unreachable!(), // Police chase only go right
             VehicleType::Police => unreachable!(), // Only PoliceChase now
@@ -326,9 +326,9 @@ impl Billboard {
         
         Billboard {
             x,
-            y: -10.0, // Hang at the top like in original
-            width: 112.0,
-            height: 64.0,
+            y: 10.0, // Position to hang down into flight area
+            width: 50.0,  // Smaller to better match visual size
+            height: 30.0, // Smaller to better match visual size
             billboard_type: billboard_types[type_idx.min(4)].clone(),
         }
     }
