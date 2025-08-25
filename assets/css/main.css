@@ -7,6 +7,9 @@
   margin: 0 auto;
   width: 900;
   height: 330;
+  /* Attempt to slow animation - may not work on all browsers */
+  animation-play-state: paused;
+  animation-delay: -50s; /* Try to start at different frame */
 }
 
 .game-background {
@@ -22,7 +25,213 @@
   justify-content: center;
   align-items: center;
   flex-direction: column;
+}
 
+.game-selector {
+  background-image: url(https://i.imgur.com/1Uff4wb.gif);
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  color: white;
+  min-height: 100vh;
+  min-width: 600px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.game-selector::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 1;
+}
+
+.game-selector > * {
+  position: relative;
+  z-index: 2;
+}
+
+.game-selector h2 {
+  font-size: 4rem;
+  font-weight: bold;
+  text-shadow: 
+    4px 4px 0 #000,
+    -2px -2px 0 #000,
+    2px -2px 0 #000,
+    -2px 2px 0 #000,
+    2px 2px 0 #000,
+    0 0 20px #ff0066;
+  -webkit-text-stroke: 2px #ff0066;
+  color: white;
+  margin: 0 0 10px 0;
+  text-align: center;
+  letter-spacing: 3px;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  color: #00ccff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  margin: 0 0 40px 0;
+  text-align: center;
+  font-weight: 300;
+  letter-spacing: 2px;
+}
+
+.engine-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.engine-btn {
+  background: linear-gradient(135deg, rgba(255, 0, 102, 0.9), rgba(255, 102, 0, 0.9));
+  border: 2px solid #ff0066;
+  color: white;
+  padding: 20px 40px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 320px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  box-shadow: 
+    0 8px 32px rgba(255, 0, 102, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.engine-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.engine-btn:hover::before {
+  left: 100%;
+}
+
+.btn-label {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 2px;
+  margin-bottom: 5px;
+}
+
+.btn-desc {
+  font-size: 14px;
+  font-weight: 400;
+  opacity: 0.9;
+  letter-spacing: 1px;
+}
+
+.engine-btn:hover {
+  transform: scale(1.05) translateY(-3px);
+  box-shadow: 
+    0 15px 45px rgba(255, 0, 102, 0.5),
+    0 0 35px rgba(255, 0, 102, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  border-color: #ff3388;
+  background: linear-gradient(135deg, rgba(255, 0, 102, 1), rgba(255, 102, 0, 1));
+}
+
+.engine-btn:active {
+  transform: scale(1.02) translateY(-1px);
+}
+
+.instructions {
+  font-size: 1.1rem;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  text-align: center;
+  margin: 0;
+  font-style: italic;
+  letter-spacing: 1px;
+}
+
+.credits {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 15px;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 0, 102, 0.3);
+  z-index: 1000;
+}
+
+.credit-links {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+  font-size: 14px;
+}
+
+.github-link,
+.tileset-credit {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 5px 10px;
+  border-radius: 6px;
+}
+
+.github-link:hover,
+.tileset-credit:hover {
+  color: #ff0066;
+  background: rgba(255, 0, 102, 0.1);
+  text-shadow: 0 0 8px rgba(255, 0, 102, 0.5);
+  transform: translateY(-1px);
+}
+
+.github-link svg {
+  transition: transform 0.3s ease;
+}
+
+.github-link:hover svg {
+  transform: scale(1.1);
+}
+
+.credit-separator {
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: bold;
+}
+
+.back-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  border: 1px solid #ff0066;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
 }
 
 .game-title {

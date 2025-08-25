@@ -14,7 +14,11 @@
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "standup": "webpack --watch --mode=development"
+    "standup": "webpack --watch --mode=development",
+    "build-rust": "make build-rust",
+    "serve": "make serve",
+    "dev": "make dev",
+    "clean": "make clean"
   },
   "repository": {
     "type": "git",
