@@ -53,7 +53,7 @@ jobs:
         echo "✅ WASM build completed successfully!"
         
     - name: Upload WASM artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: rust-wasm-build
         path: |
@@ -63,17 +63,3 @@ jobs:
           rust-game/pkg/package.json
         retention-days: 30
         
-    - name: Commit and push built WASM (if on rust_wasm branch)
-      if: github.ref == 'refs/heads/rust_wasm' && github.event_name == 'push'
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        
-        # Check if there are changes to commit
-        if [[ -n $(git status --porcelain rust-game/pkg/) ]]; then
-          git add rust-game/pkg/
-          git commit -m "🤖 Auto-build Rust WASM artifacts
-          git push
-        else
-          echo "No changes to WASM artifacts detected"
-        fi
