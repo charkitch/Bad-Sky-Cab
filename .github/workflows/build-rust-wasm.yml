@@ -1,0 +1,83 @@
+name: Build Rust WASM
+
+on:
+  push:
+    branches: [ master, rust_wasm ]
+    paths:
+      - 'rust-game/**'
+      - '.github/workflows/build-rust-wasm.yml'
+  pull_request:
+    branches: [ master ]
+    paths:
+      - 'rust-game/**'
+      - '.github/workflows/build-rust-wasm.yml'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  build-wasm:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+        
+    - name: Install wasm-pack
+      run: curl https://rustwasm.github.io/wasm-pack/installer/init.sh -sSf | sh
+      
+    - name: Cache Rust dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db/
+          rust-game/target/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('rust-game/Cargo.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-cargo-
+          
+    - name: Build Rust WASM module
+      run: |
+        cd rust-game
+        wasm-pack build --target web --out-dir pkg
+        
+    - name: Verify build artifacts
+      run: |
+        ls -la rust-game/pkg/
+        echo "✅ WASM build completed successfully!"
+        
+    - name: Upload WASM artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: rust-wasm-build
+        path: |
+          rust-game/pkg/*.wasm
+          rust-game/pkg/*.js
+          rust-game/pkg/*.ts
+          rust-game/pkg/package.json
+        retention-days: 30
+        
+    - name: Commit and push built WASM (if on rust_wasm branch)
+      if: github.ref == 'refs/heads/rust_wasm' && github.event_name == 'push'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+        # Check if there are changes to commit
+        if [[ -n $(git status --porcelain rust-game/pkg/) ]]; then
+          git add rust-game/pkg/
+          git commit -m "🤖 Auto-build Rust WASM artifacts
+
+🚀 Generated with [Claude Code](https://claude.ai/code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>"
+          git push
+        else
+          echo "No changes to WASM artifacts detected"
+        fi
