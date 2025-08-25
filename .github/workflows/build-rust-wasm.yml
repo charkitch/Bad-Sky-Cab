@@ -73,10 +73,6 @@ jobs:
         if [[ -n $(git status --porcelain rust-game/pkg/) ]]; then
           git add rust-game/pkg/
           git commit -m "🤖 Auto-build Rust WASM artifacts
-
-🚀 Generated with [Claude Code](https://claude.ai/code)
-
-Co-Authored-By: Claude <noreply@anthropic.com>"
           git push
         else
           echo "No changes to WASM artifacts detected"
