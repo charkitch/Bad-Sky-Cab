@@ -285,14 +285,6 @@ impl Building {
             building_type: building_types[type_idx].clone(),
         }
     }
-
-    pub fn update(&mut self, speed: f32) {
-        self.x -= speed;
-    }
-
-    pub fn is_off_screen(&self) -> bool {
-        self.x + self.width < -50.0
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
