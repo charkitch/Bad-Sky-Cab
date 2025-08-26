@@ -3,7 +3,7 @@
 # Bad-Sky-Cab
 
 ## What it is
-An airborne sidescroller in a city of the future. Zoom past towering structures, avoid speeding delivery trucks and head onwards ever to the right!
+An airborne sidescroller in a city of the future. Zoom past towering structures, avoid speeding delivery trucks and head onwards ever to the right! Now in two flavors, vanilla javascript or rust+wasm.
 
 ## A quick history
 
