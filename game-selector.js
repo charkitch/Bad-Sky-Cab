@@ -96,6 +96,9 @@ class RustGameWrapper {
         loopStatus: true
     });
     
+    // Performance profiling
+    this.profilingEnabled = window.location.search.includes('profile=true');
+    
     // Load vehicle images
     this.vehicleImages = {};
     
@@ -239,6 +242,9 @@ class RustGameWrapper {
 
   start() {
     this.gameState = new this.wasm.GameState();
+    if (this.profilingEnabled) {
+      this.gameState.enable_profiling();
+    }
     this.running = true;
     this.gameLoop();
   }
@@ -308,14 +314,20 @@ class RustGameWrapper {
   gameLoop() {
     if (!this.running) return;
     
-    // Update game state in Rust
+    // Update game state in Rust (includes profiling)
     this.gameState.update();
     
     // Get serialized state from Rust
     const state = JSON.parse(this.gameState.get_state());
     
-    // Render using JavaScript
+    // Render using JavaScript with profiling
+    if (this.profilingEnabled) {
+      this.gameState.start_render_profiling();
+    }
     this.render(state);
+    if (this.profilingEnabled) {
+      this.gameState.end_render_profiling();
+    }
     
     requestAnimationFrame(() => this.gameLoop());
   }
@@ -645,6 +657,15 @@ class RustGameWrapper {
     if (image && image.complete) {
       this.ctx.drawImage(image, x, building.y, building.width, building.height);
     } else {
+      // Debug: Log missing building images occasionally
+      if (Math.random() < 0.01) {
+        console.log(`Building image missing or not loaded: ${imageKey}`, {
+          buildingType: building.building_type,
+          imageExists: !!image,
+          imageComplete: image ? image.complete : false,
+          availableImages: Object.keys(this.buildingImages)
+        });
+      }
       // Fallback to a darker, more subtle gray for background buildings
       this.ctx.fillStyle = '#334455';
       this.ctx.fillRect(x, building.y, building.width, building.height);
@@ -662,6 +683,20 @@ class RustGameWrapper {
     }
   }
 
+  getProfileData() {
+    if (this.profilingEnabled && this.gameState) {
+      const jsonData = this.gameState.get_profile_data();
+      return JSON.parse(jsonData);
+    }
+    return null;
+  }
+
+  resetProfiler() {
+    if (this.profilingEnabled && this.gameState) {
+      this.gameState.reset_profiler();
+    }
+  }
+
   cleanup() {
     this.running = false;
     if (this.gameState) {
@@ -672,5 +707,5 @@ class RustGameWrapper {
 
 // Initialize the game selector when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-  new GameSelector();
+  window.gameSelector = new GameSelector();
 });
