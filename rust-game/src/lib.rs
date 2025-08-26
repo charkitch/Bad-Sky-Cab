@@ -7,7 +7,7 @@ mod background;
 
 use game_state::GameState as InternalGameState;
 
-// Enable logging and panic hooks for debugging
+// Enable panic hooks for better error messages
 #[wasm_bindgen(start)]
 pub fn main() {
     console_error_panic_hook::set_once();

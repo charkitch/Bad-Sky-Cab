@@ -291,7 +291,7 @@ impl Building {
     }
 
     pub fn is_off_screen(&self) -> bool {
-        self.x < -self.width - 50.0
+        self.x + self.width < -50.0
     }
 }
 
@@ -327,8 +327,8 @@ impl Billboard {
         Billboard {
             x,
             y: 10.0, // Position to hang down into flight area
-            width: 50.0,  // Smaller to better match visual size
-            height: 30.0, // Smaller to better match visual size
+            width: 84.0,  // 60% of JavaScript game size (140 * 0.6)
+            height: 48.0, // 60% of JavaScript game size (80 * 0.6)
             billboard_type: billboard_types[type_idx.min(4)].clone(),
         }
     }
@@ -338,16 +338,18 @@ impl Billboard {
     }
 
     pub fn is_off_screen(&self) -> bool {
-        self.x < -self.width - 50.0
+        self.x + self.width < -50.0
     }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BackgroundManager {
     pub far_buildings: Vec<Building>,
+    pub distant_buildings: Vec<Building>,
     pub traffic_vehicles: Vec<BackgroundVehicle>,
     pub billboards: Vec<Billboard>,
     pub far_building_offset: f32,
+    pub distant_building_offset: f32,
     pub spawn_timer: u32,
     canvas_width: f32,
 }
@@ -409,15 +411,18 @@ impl BackgroundManager {
     pub fn new(canvas_width: f32) -> Self {
         let mut manager = BackgroundManager {
             far_buildings: Vec::new(),
+            distant_buildings: Vec::new(),
             traffic_vehicles: Vec::new(),
             billboards: Vec::new(),
             far_building_offset: 0.0,
+            distant_building_offset: 0.0,
             spawn_timer: 0,
             canvas_width,
         };
 
         // Initialize some background buildings
         manager.generate_initial_buildings();
+        manager.generate_initial_distant_buildings();
         manager.generate_initial_traffic();
         manager.generate_initial_billboards();
         
@@ -425,25 +430,47 @@ impl BackgroundManager {
     }
 
     pub fn update(&mut self) {
-        // Update parallax offset for far buildings
-        self.far_building_offset -= 0.5; // Slow parallax movement
-        if self.far_building_offset < -100.0 {
+        // Update parallax offset for far buildings - slower than foreground
+        // Negative offset moves buildings left (off screen), creating proper parallax
+        self.far_building_offset -= 0.3; // Move buildings left slowly
+        self.distant_building_offset -= 0.25; // Move distant buildings slightly slower
+        
+        // When buildings have scrolled far enough left, reset offset and regenerate buildings
+        if self.far_building_offset < -300.0 {
             self.far_building_offset = 0.0;
+            // Clear old buildings and generate fresh ones
+            self.far_buildings.clear();
+            self.generate_initial_buildings();
         }
 
-        // Update buildings (move them left at slow speed)
-        for building in &mut self.far_buildings {
-            building.update(1.0); // Slow building movement
+        if self.distant_building_offset < -300.0 {
+            self.distant_building_offset = 0.0;
+            // Clear old distant buildings and generate fresh ones
+            self.distant_buildings.clear();
+            self.generate_initial_distant_buildings();
         }
+
+        // Don't update individual building positions - use offset for consistent parallax
+        // Buildings stay in their world positions, only the offset moves for parallax
 
         // Update billboards
         for billboard in &mut self.billboards {
             billboard.update(2.0); // Move slightly faster than buildings
         }
 
-        // Remove off-screen buildings and add new ones
-        self.far_buildings.retain(|building| !building.is_off_screen());
+        // Remove off-screen buildings (accounting for parallax offset) and add new ones
+        self.far_buildings.retain(|building| {
+            let effective_x = building.x + self.far_building_offset;
+            effective_x > -building.width - 50.0
+        });
         self.spawn_buildings_if_needed();
+
+        // Remove off-screen distant buildings and add new ones
+        self.distant_buildings.retain(|building| {
+            let effective_x = building.x + self.distant_building_offset;
+            effective_x > -building.width - 50.0
+        });
+        self.spawn_distant_buildings_if_needed();
 
         // Remove off-screen billboards and add new ones
         self.billboards.retain(|billboard| !billboard.is_off_screen());
@@ -471,6 +498,15 @@ impl BackgroundManager {
         }
     }
 
+    fn generate_initial_distant_buildings(&mut self) {
+        let mut spawn_x = 0.0;
+        for _ in 0..12 {
+            let building = Building::new(spawn_x);
+            spawn_x += building.width + (Math::random() * 80.0) as f32 + 40.0; // Wider spacing for distant buildings
+            self.distant_buildings.push(building);
+        }
+    }
+
     fn generate_initial_traffic(&mut self) {
         // Start with no traffic - vehicles will spawn during gameplay
     }
@@ -486,9 +522,20 @@ impl BackgroundManager {
 
     fn spawn_buildings_if_needed(&mut self) {
         if let Some(last_building) = self.far_buildings.last() {
-            if last_building.x + last_building.width < self.canvas_width + 200.0 {
+            let effective_x = last_building.x + last_building.width + self.far_building_offset;
+            if effective_x < self.canvas_width + 200.0 {
                 let spawn_x = last_building.x + last_building.width + (Math::random() * 50.0) as f32 + 20.0;
                 self.far_buildings.push(Building::new(spawn_x));
+            }
+        }
+    }
+
+    fn spawn_distant_buildings_if_needed(&mut self) {
+        if let Some(last_building) = self.distant_buildings.last() {
+            let effective_x = last_building.x + last_building.width + self.distant_building_offset;
+            if effective_x < self.canvas_width + 300.0 {
+                let spawn_x = last_building.x + last_building.width + (Math::random() * 80.0) as f32 + 40.0;
+                self.distant_buildings.push(Building::new(spawn_x));
             }
         }
     }
