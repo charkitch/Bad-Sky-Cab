@@ -656,8 +656,6 @@ class RustGameWrapper {
 
     if (image && image.complete) {
         this.ctx.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-    } else {
-        
         // Fallback rendering
         this.ctx.fillStyle = '#808080'; // Gray color for unloaded obstacles
         this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
