@@ -15,6 +15,71 @@ WASM is one of my blind spots, an area of the browser environment I have never i
 
 The answer was about 4 hours of back and forth.
 
+## Performance Analysis
+
+### Architectural Improvements in Rust WASM Version
+
+The Rust WASM version addresses several fundamental issues present in the original JavaScript implementation:
+
+**Fixed Frame Rate Coupling**: The JavaScript version's score system increments every frame (`this.score += 1 * this.scoreMultiplier` at [lib/game.js:281](lib/game.js#L281)), causing wildly different gameplay speeds on different devices. The Rust version uses deterministic timestep-based updates.
+
+**Memory Management**: Rust's ownership system eliminates the memory leaks present in the JavaScript version, which accumulates event listeners and sound objects without proper cleanup.
+
+**Predictable Performance**: The Rust version maintains consistent collision detection and entity management across all devices, while the JavaScript version's performance varies significantly based on hardware refresh rates.
+
+### Profiling Tools
+
+This repository includes comprehensive performance profiling tools for scientific comparison:
+
+**Automated Benchmarking**: 
+- Run with `?benchmark=true` in URL for full automated comparison
+- Tests both versions across multiple load scenarios
+- Exports statistical analysis in JSON format
+
+**Manual Profiling**:
+- Add `?profile=true` to URL for real-time performance monitoring
+- In-browser profiler UI for manual testing
+- Individual game version testing and comparison
+
+**System Monitor** (New):
+- Real-time CPU, Memory, and FPS tracking in unified interface
+- Automatic comparison testing between versions
+- Comprehensive system resource monitoring
+
+**Metrics Tracked**:
+- Frame time consistency and average FPS
+- Memory usage patterns
+- Collision detection performance  
+- Entity count vs performance correlation
+- Render time optimization
+
+### Running Your Own Benchmarks
+
+1. **Automated Full Suite**:
+   ```
+   https://your-site.com/?benchmark=true
+   ```
+
+2. **Manual Testing**:
+   ```
+   https://your-site.com/?profile=true
+   ```
+
+3. **System Monitor**:
+   ```
+   https://your-site.com/
+   # Click JS or Rust buttons in system monitor (top-left)
+   # Or via console: systemMonitor.quickCompare(30000)
+   ```
+
+4. **Analyze Results**:
+   ```javascript
+   // In browser console after benchmark
+   const analysis = analyzeResults(benchmarkResults);
+   console.log(analysis.readmeContent);
+   ```
+
+*Benchmark data will be populated here after running tests on production environment*
 
 ## In the future of the future
 
