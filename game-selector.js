@@ -323,18 +323,22 @@ class RustGameWrapper {
   render(state) {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     
+    // Render distant background buildings (furthest back)
+    if (state.background?.distant_buildings) {
+      this.ctx.save();
+      this.ctx.globalAlpha = 0.75; // 75% opacity for distant background
+      state.background.distant_buildings.forEach((building, index) => {
+        this.renderBackgroundBuilding(building, state.background.distant_building_offset || 0);
+      });
+      this.ctx.restore();
+    }
+
     // Render far background buildings (parallax)
     if (state.background?.far_buildings) {
       this.ctx.save();
-      this.ctx.globalAlpha = 0.6; // Increased opacity to make buildings more visible
-      this.ctx.fillStyle = '#556677'; // Lighter color for better visibility
-      state.background.far_buildings.forEach(building => {
-        this.ctx.fillRect(
-          building.x + (state.background.far_building_offset || 0),
-          building.y,
-          building.width,
-          building.height
-        );
+      this.ctx.globalAlpha = 0.75; // 75% opacity for near background
+      state.background.far_buildings.forEach((building, index) => {
+        this.renderBackgroundBuilding(building, state.background.far_building_offset || 0);
       });
       this.ctx.restore();
     }
@@ -617,12 +621,41 @@ class RustGameWrapper {
     
   }
 
+  renderBackgroundBuilding(building, offset) {
+    const x = building.x + offset;
+    
+    // Use building images based on building type - consistently map each type
+    let imageKey;
+    switch (building.building_type) {
+      case 'Tall':
+        imageKey = 'TallTower';
+        break;
+      case 'Wide':
+        imageKey = 'WideTower';  
+        break;
+      case 'Medium':
+        imageKey = 'TallTower';
+        break;
+      default:
+        // Fallback for any unknown types
+        imageKey = 'TallTower';
+    }
+    
+    const image = this.buildingImages[imageKey];
+    if (image && image.complete) {
+      this.ctx.drawImage(image, x, building.y, building.width, building.height);
+    } else {
+      // Fallback to a darker, more subtle gray for background buildings
+      this.ctx.fillStyle = '#334455';
+      this.ctx.fillRect(x, building.y, building.width, building.height);
+    }
+  }
+
   renderObstacle(obstacle) {
     const image = this.obstacleImages[obstacle.obstacle_type];
 
     if (image && image.complete) {
         this.ctx.drawImage(image, obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-    } else {
         // Fallback rendering
         this.ctx.fillStyle = '#808080'; // Gray color for unloaded obstacles
         this.ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);

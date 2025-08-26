@@ -1,6 +1,7 @@
 # Rust
 rust-game/target/
 rust-game/Cargo.lock
+rust-game/pkg
 
 # Node modules
 node_modules/

@@ -2,12 +2,12 @@ name: Build Rust WASM
 
 on:
   push:
-    branches: [ master, rust_wasm ]
+    branches: [ main, rust_wasm ]
     paths:
       - 'rust-game/**'
       - '.github/workflows/build-rust-wasm.yml'
   pull_request:
-    branches: [ master ]
+    branches: [ main ]
     paths:
       - 'rust-game/**'
       - '.github/workflows/build-rust-wasm.yml'
